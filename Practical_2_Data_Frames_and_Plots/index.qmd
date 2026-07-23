@@ -1,0 +1,6 @@
+---
+format: html
+practical: Practical_1_Introduction_to_R
+---
+
+# Practical 1: Introduction to R
