@@ -93,7 +93,7 @@ jobs:
 
 
       # -----------------------------------------
-      # Copy practical folders to publishing directory
+      # Copy practical folders
       # -----------------------------------------
 
       - name: Copy practical folders
@@ -113,10 +113,76 @@ jobs:
 
 
       # -----------------------------------------
-      # Create homepage
+      # Add links to QMD pages
       # -----------------------------------------
 
-      - name: Create homepage
+      - name: Create practical navigation pages
+        run: |
+
+          for folder in Practical_*/; do
+
+            if [ -d "$folder" ]; then
+
+              folder_name="${folder%/}"
+
+              echo "Creating navigation for $folder_name"
+
+              # Create temporary navigation HTML
+              cat > "/tmp/navigation.html" << EOF
+
+          <section>
+
+          <h2>My practical work</h2>
+
+          <ul>
+
+          EOF
+
+
+              # Find all QMD files except index.qmd
+              find "$folder" -maxdepth 1 -type f -name "*.qmd" \
+                ! -name "index.qmd" \
+                -print | sort | while read file; do
+
+                filename=$(basename "$file" .qmd)
+
+                # Convert underscores to spaces
+                title=$(echo "$filename" | sed 's/_/ /g')
+
+                echo "<li><a href=\"$filename.html\">$title</a></li>" \
+                  >> /tmp/navigation.html
+
+              done
+
+
+              cat >> "/tmp/navigation.html" << EOF
+
+          </ul>
+
+          </section>
+
+          EOF
+
+
+              # Insert navigation before </body>
+              if [ -f "public/$folder_name/index.html" ]; then
+
+                sed -i \
+                  -e "/<\/body>/e cat /tmp/navigation.html" \
+                  "public/$folder_name/index.html"
+
+              fi
+
+            fi
+
+          done
+
+
+      # -----------------------------------------
+      # Create main homepage
+      # -----------------------------------------
+
+      - name: Create main homepage
         run: |
 
           cat > public/index.html << 'EOF'
@@ -132,13 +198,13 @@ jobs:
             <meta name="viewport"
                   content="width=device-width, initial-scale=1">
 
-            <title>MB1A_Practicals</title>
+            <title>My Practical Work</title>
 
           </head>
 
           <body>
 
-          <h1>MB1A_Practicals</h1>
+          <h1>My Practical Work</h1>
 
           <p>Select a practical below:</p>
 
