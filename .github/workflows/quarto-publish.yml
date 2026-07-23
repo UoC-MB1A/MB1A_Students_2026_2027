@@ -41,7 +41,7 @@ jobs:
       # -----------------------------------------
 
       - name: Set up R
-        uses: r-lib/actions/setup-r@v2
+      uses: r-lib/actions/setup-r@v2
 
 
       # -----------------------------------------
@@ -128,11 +128,11 @@ jobs:
               echo "Creating navigation for $folder_name"
 
               # Create temporary navigation HTML
-              cat > "/tmp/navigation.html" << EOF
+              cat > /tmp/navigation.html << EOF
 
           <section>
 
-          <h2>My practical work</h2>
+          <h2>=MB1A Practicals</h2>
 
           <ul>
 
@@ -146,8 +146,13 @@ jobs:
 
                 filename=$(basename "$file" .qmd)
 
-                # Convert underscores to spaces
-                title=$(echo "$filename" | sed 's/_/ /g')
+                # Get title from YAML
+                title=$(grep -m 1 '^title:' "$file" | sed 's/^title:[[:space:]]*//' | sed 's/^"//' | sed 's/"$//')
+
+                # If no title is found, use filename
+                if [ -z "$title" ]; then
+                  title=$(echo "$filename" | sed 's/_/ /g')
+                fi
 
                 echo "<li><a href=\"$filename.html\">$title</a></li>" \
                   >> /tmp/navigation.html
@@ -155,7 +160,7 @@ jobs:
               done
 
 
-              cat >> "/tmp/navigation.html" << EOF
+              cat >> /tmp/navigation.html << EOF
 
           </ul>
 
@@ -198,13 +203,13 @@ jobs:
             <meta name="viewport"
                   content="width=device-width, initial-scale=1">
 
-            <title>My Practical Work</title>
+            <title>MB1A Practicals</title>
 
           </head>
 
           <body>
 
-          <h1>My Practical Work</h1>
+          <h1>MB1A Practicals</h1>
 
           <p>Select a practical below:</p>
 
