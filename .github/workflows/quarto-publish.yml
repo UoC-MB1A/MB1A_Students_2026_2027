@@ -147,7 +147,10 @@ jobs:
                 filename=$(basename "$file" .qmd)
 
                 # Get title from YAML
-                title=$(grep -m 1 '^title:' "$file" | sed 's/^title:[[:space:]]*//' | sed 's/^"//' | sed 's/"$//')
+                title=$(grep -m 1 '^title:' "$file" \
+                  | sed 's/^title:[[:space:]]*//' \
+                  | sed 's/^"//' \
+                  | sed 's/"$//')
 
                 # If no title is found, use filename
                 if [ -z "$title" ]; then
@@ -181,6 +184,7 @@ jobs:
             fi
 
           done
+
 
       # -----------------------------------------
       # Create main Quarto homepage
@@ -219,8 +223,7 @@ jobs:
 
 
           quarto render homepage.qmd \
-            --output-dir public
-
+            --output public/index.html
 
 
       # -----------------------------------------
